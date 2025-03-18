@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a New Recipe</title>
+</head>
+<body>
+    <%- include('../partials/_navbar.ejs') %>
+
+    <h1>Add a New Recipe</h1>
+
+    <form action="/users/<%= user._id %>/recipes" method="post">
+        <label for="recipeName">Recipe Name:</label>
+        <input type="text" name="recipeName" id="recipeName" required />
+
+        <label for="category">Category:</label>
+        <select name="category" id="category">
+            <option value="appetizer">Appetizer</option>
+            <option value="entree">Entrée</option>
+            <option value="dessert">Dessert</option>
+            <option value="beverage">Beverage</option>
+            <option value="side dish">Side Dish</option>
+            <option value="soup or salad">Soup or Salad</option>
+            <option value="other">Other</option>
+        </select>
+
+        <label for="notes">Notes:</label>
+        <textarea name="notes" id="notes"></textarea>
+
+        <label for="postingLink">Posting Link:</label>
+        <input type="text" name="postingLink" id="postingLink" />
+
+        <h2>Ingredients</h2>
+        <div id="ingredients-list">
+            <div class="ingredient">
+                <input type="number" name="ingredients[0][quantity]" step="0.01" min="0" placeholder="Quantity" required />
+                <select name="ingredients[0][unit]">
+                    <option value="cup">Cup</option>
+                    <option value="tbsp">Tbsp</option>
+                    <option value="tsp">Tsp</option>
+                    <option value="g">Grams (g)</option>
+                    <option value="kg">Kilograms (kg)</option>
+                    <option value="oz">Ounces (oz)</option>
+                    <option value="lb">Pounds (lb)</option>
+                    <option value="ml">Milliliters (ml)</option>
+                    <option value="l">Liters (l)</option>
+                    <option value="pinch">Pinch</option>
+                </select>
+                <input type="text" name="ingredients[0][name]" placeholder="Ingredient Name" required />
+                <button type="button" onclick="removeIngredient(this)">Remove</button>
+            </div>
+        </div>
+
+        <button type="button" id="add-ingredient">+ Add Ingredient</button>
+        <button type="submit">Add Recipe</button>
+    </form>
+
+    <script>
+        let ingredientIndex = 1;
+
+        document.getElementById('add-ingredient').addEventListener('click', function () {
+            const ingredientsList = document.getElementById('ingredients-list');
+            const newIngredient = document.createElement('div');
+            newIngredient.classList.add('ingredient');
+
+            newIngredient.innerHTML = `
+                <input type="number" name="ingredients[\${ingredientIndex}][quantity]" step="0.01" min="0" placeholder="Quantity" required />
+                <select name="ingredients[\${ingredientIndex}][unit]">
+                    <option value="cup">Cup</option>
+                    <option value="tbsp">Tbsp</option>
+                    <option value="tsp">Tsp</option>
+                    <option value="g">Grams (g)</option>
+                    <option value="kg">Kilograms (kg)</option>
+                    <option value="oz">Ounces (oz)</option>
+                    <option value="lb">Pounds (lb)</option>
+                    <option value="ml">Milliliters (ml)</option>
+                    <option value="l">Liters (l)</option>
+                    <option value="pinch">Pinch</option>
+                    <option value="package">Package</option>
+                    <option value="can">Can</option>
+                    <option value="jar">Jar</option>
+                    <option value="serving">Serving</option>
+                </select>
+                <input type="text" name="ingredients[\${ingredientIndex}][name]" placeholder="Ingredient Name" required />
+                <button type="button" onclick="removeIngredient(this)">Remove</button>
+            `;
+
+            ingredientsList.appendChild(newIngredient);
+            ingredientIndex++;
+        });
+
+        function removeIngredient(button) {
+            button.parentElement.remove();
+        }
+    </script>
+</body>
+</html>
