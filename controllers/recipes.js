@@ -1,40 +1,43 @@
 const express = require('express');
 const router = express.Router();
-const Recipe = require('../models/recipeSchema');
-const User = require('../models/userSchema');
+const User = require('../models/user'); 
+const Recipe = require('../models/recipe'); 
+const isSignedIn = require('../middleware/is-signed-in');
 
-
-const isAuthenticated = (req, res, next) => {
-  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-  next();
-};
-
-
-router.post('/add', isAuthenticated, async (req, res) => {
+router.get('/', isSignedIn, async (req, res) => {
   try {
-    const { recipeName, notes, postingLink, category, ingredients } = req.body;
+    const userId = req.session.user._id; 
+    const recipes = await Recipe.find({ author: userId });
 
-    const newRecipe = new Recipe({
-      recipeName,
-      author: req.user._id,
-      notes,
-      postingLink,
-      category,
-      ingredients
-    });
-
-    await newRecipe.save();
-    res.status(201).json(newRecipe);
+    res.render('recipes/index.ejs', { recipes, user: req.session.user });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.log(error);
+    res.redirect('/');
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/new', isSignedIn, (req, res) => {
+  res.render('recipes/new.ejs', { user: req.session.user }); 
+});
+
+router.post('/', isSignedIn, async (req, res) => {
   try {
-    const recipes = await Recipe.find().populate('author', 'username');
+    const userId = req.session.user._id;
+
+    const newRecipe = new Recipe({
+      recipeName: req.body.recipeName,
+      author: userId, 
+      notes: req.body.notes,
+      postingLink: req.body.postingLink,
+      category: req.body.category,
+      ingredients: req.body.ingredients
+    });
+
+    await newRecipe.save();
+    res.redirect(`/users/${userId}/recipes`);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log(error);
+    res.redirect('/');
   }
 });
 
