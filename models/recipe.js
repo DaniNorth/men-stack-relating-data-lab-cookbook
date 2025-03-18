@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-const ingredientSchema = new mongoose.Schema ({
-  quality: {
+const ingredientSchema = new mongoose.Schema({
+  quantity: { 
     type: Number,
     required: true
   },
@@ -9,12 +9,11 @@ const ingredientSchema = new mongoose.Schema ({
     type: String,
     enum: ['cup', 'tbsp', 'tsp', 'g', 'kg', 'oz', 'lb', 'ml', 'l', 'pinch', 'package', 'can', 'jar', 'serving'],
     required: true
-
   },
-  ingriedentName: {
+  ingredientName: {
     type: String,
     required: true
-  },
+  }
 });
 
 const recipeSchema = new mongoose.Schema({
@@ -22,36 +21,20 @@ const recipeSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  authorName: {
+  author: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
-  notes: {
-    type: String,
-  },
-  postingLink: {
-    type: String
-  },
+  notes: { type: String },
+  postingLink: { type: String },
   category: {
     type: String,
-    enum: ['appetizer', 'entree', 'dessert', 'beverage', 'side dish','soup or salad', 'other'],
+    enum: ['appetizer', 'entree', 'dessert', 'beverage', 'side dish', 'soup or salad', 'other'],
   },
-  ingriedents: [ingredientSchema]
+  ingredients: [ingredientSchema]
 });
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  recipe: [recipeSchema]
-});
+const Recipe = mongoose.models.Recipe || mongoose.model('Recipe', recipeSchema);
 
-
-const Recipe = mongoose.model('Recipe', recipeSchema);
 module.exports = Recipe;
